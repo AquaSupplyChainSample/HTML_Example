@@ -1,18 +1,30 @@
-FROM adoptopenjdk/openjdk11:alpine-slim as build
-WORKDIR /workspace/app
+#FROM library/node:6
+FROM ubuntu:xenial
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+MAINTAINER "Daniel Garcia aka (cr0hn)" <cr0hn@cr0hn.com>
 
-RUN ./mvnw install -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+ENV STAGE "DOCKER"
 
-FROM adoptopenjdk/openjdk11:alpine-slim
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-Dserver.port=${PORT}","-cp","app:app/lib/*","com.example.demo.DemoApplication"]
+RUN apt-get update && apt-get -y upgrade && \
+    apt-get install -y nodejs npm netcat
+
+# Fix node links
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+
+# Build app folders
+RUN mkdir /app
+WORKDIR /app
+
+# Install depends
+COPY package.json /app/
+RUN npm install
+
+# Bundle code
+COPY . /app
+
+RUN chmod +x /app/start.sh
+
+EXPOSE 3000
+
+CMD [ "/app/start.sh" ]
+#CMD [ "npm", "start" ]
