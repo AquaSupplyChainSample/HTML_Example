@@ -31,7 +31,7 @@ pipeline {
   }
   post {
   always {
-          archiveArtifacts artifacts: "scss_cve_report", fingerprint: true
+          archiveArtifacts artifacts: 'scss_cve_report', fingerprint: true
           publishHTML (target: [
             allowMissing: false,
             alwaysLinkToLastBuild: false,
