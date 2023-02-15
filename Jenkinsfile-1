@@ -1,6 +1,11 @@
 pipeline {
   agent any
   stages {
+   stage('Build') {
+      steps {
+        sh 'docker build -t darinpope/java-web-app:latest .'
+      }
+    }
     stage('Aqua scanner') {
       agent {
         docker {
@@ -24,4 +29,17 @@ pipeline {
       }
     }
   }
-}
+  post {
+  always {
+          archiveArtifacts artifacts: "cve_report", fingerprint: true
+          publishHTML (target: [
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: '.',
+            reportFiles: 'cve_report.html',
+            reportName: 'Trivy CVE Report'
+            ])
+          }
+        } 
+  }
