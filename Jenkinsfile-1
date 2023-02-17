@@ -28,12 +28,5 @@ pipeline {
         }
       }
     }
-  timestamps { 
-    node() {
-    stage("Image Scanning") {
-      aqua locationType:'hosted', registry:'Docker Hub', hostedImage:'nginx:latest', customFlags:'--layer-vulnerabilities', hideBase:false, notCompliesCmd:'', onDisallowed:'fail', showNegligible:false
-      }
-     }
-    }
   }
 }
