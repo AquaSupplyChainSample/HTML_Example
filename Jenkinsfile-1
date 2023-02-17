@@ -5,13 +5,13 @@ pipeline {
       steps {
         sh 'docker build -t darinpope/java-web-app:latest .'
       }
+    }  
     stage('Aqua scanner') {
       agent {
         docker {
           image 'aquasec/aqua-scanner'
           }
         }
-      } 
       steps {
         withCredentials([
           string(credentialsId: 'AQUA_KEY', variable: 'AQUA_KEY'),
