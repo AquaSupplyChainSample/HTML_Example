@@ -6,13 +6,6 @@ pipeline {
         sh 'docker build -t darinpope/java-web-app:latest .'
       }
     }
-    timestamps { 
-    node() {
-    stage("Image Scanning") {
-      aqua locationType:'hosted', registry:'Docker Hub', hostedImage:'nginx:latest', customFlags:'--layer-vulnerabilities', hideBase:false, notCompliesCmd:'', onDisallowed:'fail', showNegligible:false
-      }
-     }
-    }
     stage('Aqua scanner') {
       agent {
         docker {
@@ -34,6 +27,13 @@ pipeline {
           '''
         }
       }
+    }
+  timestamps { 
+    node() {
+    stage("Image Scanning") {
+      aqua locationType:'hosted', registry:'Docker Hub', hostedImage:'nginx:latest', customFlags:'--layer-vulnerabilities', hideBase:false, notCompliesCmd:'', onDisallowed:'fail', showNegligible:false
+      }
+     }
     }
   }
 }
